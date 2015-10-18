@@ -24,6 +24,10 @@ describe('parser', ()=>{
             p.string()
           )}
         )
+      )},
+      {rank: p.any(
+        p.option($=>$.version === '1', p.value('v1')),
+        p.option($=>$.version === '2', p.value('v2'))
       )}
     ))
 
@@ -33,6 +37,7 @@ describe('parser', ()=>{
     assert(result.message1.key === '234')
     assert(result.message1.val === 'abc')
     assert(result.message1.etc === '')
+    assert(result.rank === 'v1')
 
     buf = new Buffer('2:234,abc,x1;y2;z3')
     result = def.parse(buf)
@@ -42,6 +47,7 @@ describe('parser', ()=>{
     assert(result.message2.etc[0] === 'x1')
     assert(result.message2.etc[1] === 'y2')
     assert(result.message2.etc[2] === 'z3')
+    assert(result.rank === 'v2')
   })
 
   it('parse string', ()=>{
@@ -140,6 +146,20 @@ describe('parser', ()=>{
     assert(result.user === '234')
   })
 
+  it('parse any', ()=>{
+    let result = parser(p=>p.object(
+      {version: p.string(':')},
+      {etc: p.any(
+        p.option($=>$.version === '1', p.string(':')),
+        p.option($=>$.version === '2', p.string(',')),
+        p.option($=>$.version === '3', p.string(';'))
+      )}
+    )).parse(new Buffer('2:234:abc,567:def;789:xyz'))
+
+    assert(result.version === '2')
+    assert(result.etc === '234:abc')
+  })
+
   it('parse value', ()=>{
     let result = parser(p=>p.object(
       {version: p.string(':')},
@@ -202,6 +222,11 @@ describe('parser', ()=>{
     assert.throws(
       ()=>parser(p=>p.option(()=>{}, 1)),
       /"parser" is not Function/, '"parser" of option(condition, parser) is not Function'
+    )
+
+    assert.throws(
+      ()=>parser(p=>p.any(()=>{}, 1)),
+      /is not Function/, '"parsers[x]" is not Function'
     )
   })
 })

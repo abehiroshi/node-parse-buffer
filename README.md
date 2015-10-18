@@ -39,6 +39,10 @@ var def = parser(p=>p.object(
         p.string()
       )}
     )
+  )},
+  {rank: p.any(
+    p.option($=>$.version === '1', p.value('v1')),
+    p.option($=>$.version === '2', p.value('v2'))
   )}
 ))
 
@@ -48,6 +52,7 @@ var result = def.parse(buf);
 // result.message1.key === '234'
 // result.message1.val === 'abc'
 // result.message1.etc === ''
+// result.rank === 'v1'
 
 var buf = new Buffer('2:234,abc,x1;y2;z3');
 var result = def.parse(buf);
@@ -57,6 +62,7 @@ var result = def.parse(buf);
 // result.message2.etc[0] === 'x1'
 // result.message2.etc[1] === 'y1'
 // result.message2.etc[2] === 'z1'
+// result.rank === 'v2'
 ```
 
 License

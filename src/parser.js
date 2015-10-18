@@ -108,6 +108,20 @@ parser.prototype = {
     }
   },
 
+  any(...parsers){
+    parsers.forEach((x,i)=>{
+      if (!(x instanceof Function)) throw new Error(`argument "parsers[${i}]" is not Function : ${parsers}`)
+    })
+
+    return (buf, root, offset=0)=>{
+      for (let parser of parsers){
+        let result = parser(buf, root, offset)
+        if (result.encoded !== undefined) return result
+      }
+      return {position: offset, encoded: undefined}
+    }
+  },
+
   value(val){
     return (buf, root, offset=0)=>{
       return {position: offset, encoded: val}
