@@ -11,7 +11,8 @@ describe('parser', ()=>{
         $=>$.version === '1',
         p.object(
           {key: p.string(',')},
-          {val: p.string()}
+          {val: p.string()},
+          {etc: p.value('')}
         )
       )},
       {message2: p.option(
@@ -31,6 +32,7 @@ describe('parser', ()=>{
     assert(result.version === '1')
     assert(result.message1.key === '234')
     assert(result.message1.val === 'abc')
+    assert(result.message1.etc === '')
 
     buf = new Buffer('2:234,abc,x1;y2;z3')
     result = def.parse(buf)
@@ -136,6 +138,19 @@ describe('parser', ()=>{
     assert(result.version === '1')
     assert(result.id === undefined)
     assert(result.user === '234')
+  })
+
+  it('parse value', ()=>{
+    let result = parser(p=>p.object(
+      {version: p.string(':')},
+      {val: p.option(
+        $=>$.version === '1',
+        p.value('v1')
+      )}
+    )).parse(new Buffer('1:x:y:z'))
+
+    assert(result.version === '1')
+    assert(result.val === 'v1')
   })
 
   it('error', ()=>{

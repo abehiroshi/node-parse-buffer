@@ -26,7 +26,8 @@ var def = parser(p=>p.object(
     $=>$.version === '1',
     p.object(
       {key: p.string(',')},
-      {val: p.string()}
+      {val: p.string()},
+      {etc: p.value('')}
     )
   )},
   {message2: p.option(
@@ -46,6 +47,7 @@ var result = def.parse(buf);
 // result.version === '1'
 // result.message1.key === '234'
 // result.message1.val === 'abc'
+// result.message1.etc === ''
 
 var buf = new Buffer('2:234,abc,x1;y2;z3');
 var result = def.parse(buf);

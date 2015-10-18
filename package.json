@@ -1,6 +1,6 @@
 {
   "name": "parse-buffer",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "convert to object from buffer.",
   "repository": {
     "type": "git",

@@ -107,4 +107,10 @@ parser.prototype = {
       }
     }
   },
+
+  value(val){
+    return (buf, root, offset=0)=>{
+      return {position: offset, encoded: val}
+    }
+  }
 }
